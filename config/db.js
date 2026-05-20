@@ -4,16 +4,20 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const connectDB = async () => {
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    console.error('❌ MONGODB_URI is not defined');
+    return null;
+  }
+
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`❌ MongoDB connection error: ${error.message}`);
+    return null;
   }
 };
 
