@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Admin One",
+    "email": "admin1@editflow.com",
+    "password": "123456789",
+    "role": "superadmin",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "lastLogin": null
+  },
+  {
+    "id": 2,
+    "name": "Admin Two",
+    "email": "admin2@editflow.com",
+    "password": "123456789",
+    "role": "admin",
+    "isActive": true,
+    "createdAt": "2024-01-02T00:00:00.000Z",
+    "lastLogin": null
+  }
+]

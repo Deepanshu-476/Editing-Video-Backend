@@ -1,42 +1,41 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-// Ensure upload directory exists
-const uploadDir = 'uploads/portfolio';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+// Cloudinary Storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'video-editing-agency',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'],
+    resource_type: 'auto'
   }
 });
 
 // File filter
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|webm/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  
+  const extname = allowedTypes.test(
+    require('path').extname(file.originalname).toLowerCase()
+  );
+
   const mimetype = allowedTypes.test(file.mimetype);
 
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb(new Error('Only images and video files are allowed'), false);
+    cb(new Error('Only images and videos allowed'));
   }
 };
 
-// Create multer upload instance
+// Upload middleware
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
-  fileFilter: fileFilter
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024
+  },
+  fileFilter
 });
 
 module.exports = upload;

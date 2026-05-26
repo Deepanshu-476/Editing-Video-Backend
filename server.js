@@ -16,6 +16,7 @@ dotenv.config();
 const contactRoutes = require('./routes/contactRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const authRoutes = require('./routes/authRoutes');
+const initAdmin = require('./config/initAdmin');  // ✅ CHANGE 1: YEH LINE ADD KARI
 
 const app = express();
 
@@ -30,8 +31,8 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100
 });
 app.use('/api/', limiter);
 
@@ -43,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Static files for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection with retry logic
 const startServer = async () => {
@@ -56,6 +57,9 @@ const startServer = async () => {
       console.log('📝 Some features may not work until database is connected');
     } else {
       console.log('✅ Database connected successfully');
+      
+      // ✅ CHANGE 2: YEH LINES ADD KARI - Admin users auto create honge
+      await initAdmin();
     }
 
     // API Routes
