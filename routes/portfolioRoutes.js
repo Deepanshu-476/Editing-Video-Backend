@@ -12,6 +12,7 @@ const {
   bulkDeleteProjects
 } = require('../controllers/portfolioController');
 const { protect } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 // Validation rules
 const projectValidation = [
@@ -24,7 +25,9 @@ const projectValidation = [
     .notEmpty().withMessage('Description is required')
     .isLength({ max: 500 }).withMessage('Description cannot exceed 500 characters'),
   body('videoUrl')
-    .notEmpty().withMessage('Video URL is required')
+    .if((value, { req }) => !req.file)
+    .notEmpty().withMessage('Video file or Video URL is required')
+    .bail()
     .isURL().withMessage('Please provide a valid URL')
 ];
 
@@ -35,8 +38,8 @@ router.get('/categories', getCategories);
 router.get('/:id', getProjectById);
 
 // Admin routes (protected)
-router.post('/', protect, projectValidation, createProject);
-router.put('/:id', protect, updateProject);
+router.post('/', protect, upload.single('video'), projectValidation, createProject);
+router.put('/:id', protect, upload.single('video'), updateProject);
 router.delete('/:id', protect, deleteProject);
 router.post('/bulk-delete', protect, bulkDeleteProjects);
 

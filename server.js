@@ -21,7 +21,9 @@ const initAdmin = require('./config/initAdmin');  // ✅ CHANGE 1: YEH LINE ADD 
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
 
 // CORS configuration
 app.use(cors({
@@ -44,7 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Static files for uploads
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection with retry logic
 const startServer = async () => {

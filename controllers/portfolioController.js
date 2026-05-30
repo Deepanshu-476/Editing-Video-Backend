@@ -1,6 +1,13 @@
 const Portfolio = require('../models/Portfolio');
 const { validationResult } = require('express-validator');
 
+const getUploadedFileUrl = (file) => {
+  if (!file) return null;
+  if (file.path && /^https?:\/\//i.test(file.path)) return file.path;
+  if (file.filename) return `/uploads/portfolio/${file.filename}`;
+  return null;
+};
+
 // @desc    Get all portfolio projects
 // @route   GET /api/portfolio
 // @access  Public
@@ -89,7 +96,8 @@ const createProject = async (req, res) => {
       });
     }
 
-    const { title, category, description, videoUrl, thumbnail, duration, client, tags, isFeatured, order } = req.body;
+    const { title, category, description, thumbnail, duration, client, tags, isFeatured, order } = req.body;
+    const videoUrl = getUploadedFileUrl(req.file) || req.body.videoUrl;
 
     const project = await Portfolio.create({
       title,
@@ -100,7 +108,7 @@ const createProject = async (req, res) => {
       duration,
       client,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-      isFeatured: isFeatured || false,
+      isFeatured: isFeatured === true || isFeatured === 'true',
       order: order || 0
     });
 
@@ -133,7 +141,8 @@ const updateProject = async (req, res) => {
       });
     }
 
-    const { title, category, description, videoUrl, thumbnail, duration, client, tags, isFeatured, order } = req.body;
+    const { title, category, description, thumbnail, duration, client, tags, isFeatured, order } = req.body;
+    const videoUrl = getUploadedFileUrl(req.file) || req.body.videoUrl;
 
     // Update fields
     if (title) project.title = title;

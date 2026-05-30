@@ -10,7 +10,7 @@ const portfolioSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Category is required'],
-    enum: ['corporate', 'youtube', 'commercial', 'wedding', 'music', 'social', 'other'],
+    enum: ['reel', 'corporate', 'youtube', 'commercial', 'wedding', 'music', 'social', 'other'],
     default: 'other'
   },
   description: {
